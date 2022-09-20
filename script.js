@@ -191,9 +191,6 @@ document.addEventListener('DOMContentLoaded', () => {
             authenticate().then(loadClient)
           })
 
-          const errorAuth = err => {
-            console.log(err);
-            authBlock.style.display = '';
-          };
+          
     }
 });
