@@ -147,11 +147,53 @@ document.addEventListener('DOMContentLoaded', () => {
             window.removeEventListener('resize', sizeVideo);
         });
 
-       
+       console.log(window.gapi);
     }
     //youtube
-    {
+
         const APi_KEY = 'AIzaSyAob7acqrFsAHflKMu248fRnQmSb8Y9_Ko';
         const CLIENT_ID = '1014487573609-ergrcthi275aiq3jfkd2dg74ljkhendm.apps.googleusercontent.com';
+    {
+        const buttonAuth = document.getElementById('authorize');
+        const authBlock = document.querySelector('.auth')
+
+
+        function authenticate() {
+            return gapi.auth2.getAuthInstance()
+                .signIn({scope: "https://www.googleapis.com/auth/youtube.readonly"})
+                .then(function() { console.log("Sign-in successful"); },
+                      function(err) { console.error("Error signing in", err); });
+                      
+          }
+          function loadClient() {
+            gapi.client.setApiKey(APi_KEY);
+            return gapi.client.load("https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest")
+            .then(() => authBlock.style.display = 'none')
+            .then(function() { console.log("GAPI client loaded for API"); },
+                      
+                function(err) { console.error("Error loading GAPI client for API", err); });
+               
+          }
+          // Make sure the client is loaded and sign-in is complete before calling this method.
+          function execute() {
+            return gapi.client.youtube.channels.list({})
+                .then(function(response) {
+                        // Handle the results here (response.result has the parsed body).
+                        console.log("Response", response);
+                      },
+                      function(err) { console.error("Execute error", err); });
+          }
+          gapi.load("client:auth2", function() {
+            gapi.auth2.init({client_id: CLIENT_ID});
+          });
+
+          buttonAuth.addEventListener('click', () => {
+            authenticate().then(loadClient)
+          })
+
+          const errorAuth = err => {
+            console.log(err);
+            authBlock.style.display = '';
+          };
     }
 });
